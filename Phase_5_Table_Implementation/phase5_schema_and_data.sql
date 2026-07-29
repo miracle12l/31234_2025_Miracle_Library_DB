@@ -1,0 +1,103 @@
+-- =========================================================
+-- Project: 31234_2025_Miracle_Library_DB
+-- Phase: V - Table Implementation & DDL Scripts
+-- =========================================================
+
+-- 1. DROP EXISTING TABLES AND SEQUENCES (Cleanup)
+CASCADE CONSTRAINTS;
+DROP TABLE FINES CASCADE CONSTRAINTS;
+DROP TABLE BORROW_TRANSACTIONS CASCADE CONSTRAINTS;
+DROP TABLE BOOK_COPIES CASCADE CONSTRAINTS;
+DROP TABLE BOOKS CASCADE CONSTRAINTS;
+DROP TABLE MEMBERS CASCADE CONSTRAINTS;
+
+DROP SEQUENCE SEQ_MEMBER_ID;
+DROP SEQUENCE SEQ_BOOK_ID;
+DROP SEQUENCE SEQ_COPY_ID;
+DROP SEQUENCE SEQ_TRANSACTION_ID;
+DROP SEQUENCE SEQ_FINE_ID;
+
+-- 2. CREATE SEQUENCES
+CREATE SEQUENCE SEQ_MEMBER_ID START WITH 1001 INCREMENT BY 1;
+CREATE SEQUENCE SEQ_BOOK_ID START WITH 5001 INCREMENT BY 1;
+CREATE SEQUENCE SEQ_COPY_ID START WITH 8001 INCREMENT BY 1;
+CREATE SEQUENCE SEQ_TRANSACTION_ID START WITH 9001 INCREMENT BY 1;
+CREATE SEQUENCE SEQ_FINE_ID START WITH 3001 INCREMENT BY 1;
+
+-- 3. CREATE TABLES WITH CONSTRAINTS
+
+-- MEMBERS Table
+CREATE TABLE MEMBERS (
+    member_id NUMBER DEFAULT SEQ_MEMBER_ID.NEXTVAL PRIMARY KEY,
+    first_name VARCHAR2(50) NOT NULL,
+    last_name VARCHAR2(50) NOT NULL,
+    email VARCHAR2(100) UNIQUE NOT NULL,
+    phone VARCHAR2(20),
+    member_type VARCHAR2(20) CHECK (member_type IN ('STUDENT', 'STAFF')),
+    registration_date DATE DEFAULT SYSDATE NOT NULL,
+    status VARCHAR2(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'SUSPENDED'))
+);
+
+-- BOOKS Table
+CREATE TABLE BOOKS (
+    book_id NUMBER DEFAULT SEQ_BOOK_ID.NEXTVAL PRIMARY KEY,
+    isbn VARCHAR2(20) UNIQUE NOT NULL,
+    title VARCHAR2(200) NOT NULL,
+    author VARCHAR2(100) NOT NULL,
+    publisher VARCHAR2(100),
+    publication_year NUMBER(4),
+    category VARCHAR2(50)
+);
+
+-- BOOK_COPIES Table
+CREATE TABLE BOOK_COPIES (
+    copy_id NUMBER DEFAULT SEQ_COPY_ID.NEXTVAL PRIMARY KEY,
+    book_id NUMBER NOT NULL,
+    status VARCHAR2(20) DEFAULT 'AVAILABLE' CHECK (status IN ('AVAILABLE', 'BORROWED', 'MAINTENANCE')),
+    CONSTRAINT fk_copies_book FOREIGN KEY (book_id) REFERENCES BOOKS(book_id) ON DELETE CASCADE
+);
+
+-- BORROW_TRANSACTIONS Table
+CREATE TABLE BORROW_TRANSACTIONS (
+    transaction_id NUMBER DEFAULT SEQ_TRANSACTION_ID.NEXTVAL PRIMARY KEY,
+    copy_id NUMBER NOT NULL,
+    member_id NUMBER NOT NULL,
+    borrow_date DATE DEFAULT SYSDATE NOT NULL,
+    due_date DATE NOT NULL,
+    return_date DATE,
+    status VARCHAR2(20) DEFAULT 'ISSUED' CHECK (status IN ('ISSUED', 'RETURNED')),
+    CONSTRAINT fk_trans_copy FOREIGN KEY (copy_id) REFERENCES BOOK_COPIES(copy_id),
+    CONSTRAINT fk_trans_member FOREIGN KEY (member_id) REFERENCES MEMBERS(member_id)
+);
+
+-- FINES Table
+CREATE TABLE FINES (
+    fine_id NUMBER DEFAULT SEQ_FINE_ID.NEXTVAL PRIMARY KEY,
+    transaction_id NUMBER NOT NULL,
+    amount NUMBER(8,2) NOT NULL CHECK (amount >= 0),
+    status VARCHAR2(20) DEFAULT 'UNPAID' CHECK (status IN ('UNPAID', 'PAID')),
+    CONSTRAINT fk_fines_trans FOREIGN KEY (transaction_id) REFERENCES BORROW_TRANSACTIONS(transaction_id)
+);
+
+-- 4. INSERT SAMPLE DATA
+
+-- Members
+INSERT INTO MEMBERS (first_name, last_name, email, phone, member_type) 
+VALUES ('Miracle', 'Sebakungu', 'miracle@unilak.ac.rw', '+250780000001', 'STUDENT');
+
+INSERT INTO MEMBERS (first_name, last_name, email, phone, member_type) 
+VALUES ('Eric', 'Maniraguha', 'eric.m@unilak.ac.rw', '+250780000002', 'STAFF');
+
+-- Books
+INSERT INTO BOOKS (isbn, title, author, publisher, publication_year, category) 
+VALUES ('978-0134685991', 'Effective Java', 'Joshua Bloch', 'Addison-Wesley', 2018, 'Programming');
+
+INSERT INTO BOOKS (isbn, title, author, publisher, publication_year, category) 
+VALUES ('978-0071843997', 'Oracle Database 12c PL/SQL Programming', 'Michael McLaughlin', 'McGraw-Hill', 2014, 'Database');
+
+-- Book Copies
+INSERT INTO BOOK_COPIES (book_id, status) VALUES (5001, 'AVAILABLE');
+INSERT INTO BOOK_COPIES (book_id, status) VALUES (5001, 'AVAILABLE');
+INSERT INTO BOOK_COPIES (book_id, status) VALUES (5002, 'AVAILABLE');
+
+COMMIT;
