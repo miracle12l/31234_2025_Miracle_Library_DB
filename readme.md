@@ -10,29 +10,12 @@
 
 ---
 
-## PHASE I: PROBLEM STATEMENT
-
-### 1. Problem Definition & Analysis
-Manual library operations create bottlenecks in tracking physical books, monitoring loan durations, and applying policy rules. Key challenges include:
-* Misplaced physical ledger records for book loans and returns.
-* Late returns going untracked, resulting in uncollected fines.
-* Difficulty in real-time tracking of available inventory.
-* Absence of automated system locks during non-working days or holidays.
-
-### 2. Context of Use
-An automated Oracle Database management system for academic libraries to manage cataloging, member subscriptions, book checkouts, returns, fine processing, and activity auditing.
-
-### 3. Target Users
-* **Librarians / System Administrators:** Book entry, user management, audit review, and reports.
-* **Library Members (Students & Staff):** Searching books, issuing borrowing requests, returning books.
-
-### 4. Project Objectives
-* Design a normalized relational database (up to 3NF).
-* Write PL/SQL stored procedures, functions, and packages for transactions.
-* Create triggers to block dynamic operations during weekdays and public holidays.
-* Implement user activity audit logging for system security.
-
-### 5. Expected Benefits
-* Real-time visibility into book availability.
-* 100% policy enforcement through database triggers.
-* Full transparency and security via automated auditing.
+## 📂 Project Structure
+* 📂 **`Phase_1_Problem_Statement/`** — Problem definition, target users, and objectives[cite: 1]
+* 📂 **`Phase_2_Business_Process/`** — Workflow diagrams & process modeling[cite: 1]
+* 📂 **`Phase_3_Logical_Design/`** — ERD & 3NF Schema design[cite: 1]
+* 📂 **`Phase_4_Database_Creation/`** — Oracle user & privilege setup[cite: 1]
+* 📂 **`Phase_5_Table_Implementation/`** — DDL scripts & sample data[cite: 1]
+* 📂 **`Phase_6_PLSQL_Programming/`** — Stored procedures, functions & packages[cite: 1]
+* 📂 **`Phase_7_Advanced_Database/`** — Triggers, security & audit logs[cite: 1]
+* 📂 **`Phase_8_Documentation/`** — Presentation slides & final report[cite: 1]
